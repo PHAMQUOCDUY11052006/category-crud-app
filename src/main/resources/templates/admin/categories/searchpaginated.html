@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout-admin}">
+<body>
+<div layout:fragment="content">
+
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Danh sach Category</span>
+            <a th:href="@{/admin/categories/add}" class="btn btn-outline-success btn-sm">
+                <i class="fa fa-plus"></i> Them Category
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Thong bao sau khi them/sua/xoa -->
+            <div th:if="${message != null}" class="alert alert-primary" role="alert">
+                <i th:text="${message}"></i>
+            </div>
+
+            <!-- Form tim kiem -->
+            <form th:action="@{/admin/categories/searchpaginated}" method="get" class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="name" th:value="${name}"
+                               placeholder="Nhap tu khoa tim kiem theo ten..." />
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fa fa-search"></i> Tim kiem
+                        </button>
+                        <a th:if="${name != null}" th:href="@{/admin/categories/searchpaginated}"
+                           class="btn btn-outline-secondary">Xoa loc</a>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Khong co du lieu -->
+            <div th:if="${!categoryPage.hasContent()}" class="alert alert-danger">
+                Khong tim thay danh muc nao.
+            </div>
+
+            <!-- Bang du lieu -->
+            <table th:if="${categoryPage.hasContent()}"
+                   class="table table-striped table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th style="width: 100px;">ID</th>
+                    <th>Ten Category</th>
+                    <th style="width: 220px;">Thao tac</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="category : ${categoryPage.content}">
+                    <td th:text="${category.categoryId}"></td>
+                    <td th:text="${category.name}"></td>
+                    <td>
+                        <a th:href="@{'/admin/categories/edit/' + ${category.categoryId}}"
+                           class="btn btn-outline-warning btn-sm">
+                            <i class="fa fa-edit"></i> Sua
+                        </a>
+                        <a th:href="@{'/admin/categories/delete/' + ${category.categoryId}}"
+                           class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Ban co chac muon xoa danh muc nay?');">
+                            <i class="fa fa-trash"></i> Xoa
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Phan trang -->
+            <nav th:if="${categoryPage.totalPages > 0}" aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+
+                    <li class="page-item"
+                        th:classappend="${categoryPage.number + 1 == 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/categories/searchpaginated(name=${name}, page=1)}">Dau</a>
+                    </li>
+
+                    <li class="page-item" th:each="pageNumber : ${pageNumbers}"
+                        th:classappend="${pageNumber == categoryPage.number + 1} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/categories/searchpaginated(name=${name}, page=${pageNumber})}"
+                           th:text="${pageNumber}"></a>
+                    </li>
+
+                    <li class="page-item"
+                        th:classappend="${categoryPage.number + 1 == categoryPage.totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/categories/searchpaginated(name=${name}, page=${categoryPage.totalPages})}">Cuoi</a>
+                    </li>
+
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
